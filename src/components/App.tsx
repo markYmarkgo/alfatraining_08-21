@@ -2,7 +2,7 @@ import React, {ReactElement, useState} from 'react';
 
 import BookList from './BookList'
 import BookDetails from './BookDetails'
-import Book from '../types/Book'
+import {Book} from '../types/Book'
 
 type ViewState = 'list' | 'details'
 
