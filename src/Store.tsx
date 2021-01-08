@@ -1,5 +1,5 @@
 import React, {createContext, Dispatch, ReactElement, useContext, useReducer} from 'react'
-import {Book} from './types/Book';
+import {Book} from './types/Book'
 
 export interface Store {
   cart: Book[]

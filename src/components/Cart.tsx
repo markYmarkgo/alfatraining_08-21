@@ -1,10 +1,10 @@
-import React, {SyntheticEvent} from 'react';
+import React, {ReactElement, SyntheticEvent} from 'react';
 import BookListItem from './BookListItem';
 
 import {Actions, useStore} from '../Store'
 import {Book} from '../types/Book';
 
-export default function Cart(): JSX.Element {
+export default function Cart(): ReactElement {
   const {store, dispatch} = useStore()
 
   const books = store.cart.reduce((acc: Book[], book) => {
