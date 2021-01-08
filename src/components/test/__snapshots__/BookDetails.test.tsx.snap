@@ -13,8 +13,7 @@ exports[`BookDetails rendering and button clicks matches snapshot 1`] = `
         Home
       </a>
       <a
-        aria-current="page"
-        class="item active"
+        class="item"
         href="/books"
       >
         Books
