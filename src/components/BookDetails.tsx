@@ -4,8 +4,10 @@ import {Book} from '../types/Book'
 import LoadingSpinner from './shared/LoadingSpinner'
 import {useBookApi, bookApi} from '../shared/BookApi'
 import {Link, useHistory, useParams} from 'react-router-dom';
+import {useStore} from '../Store';
 
 export default function BookDetails(): ReactElement {
+  const {dispatch} = useStore()
   const {isbn} = useParams<{isbn: string}>()
   const history = useHistory()
   const book = useBookApi<Book>('get', `books/${isbn}`)[0]
@@ -20,6 +22,10 @@ export default function BookDetails(): ReactElement {
     bookApi('delete', `books/${isbn}`, onGoToList)
   }
 
+  const addToCart = () => {
+    dispatch({type: 'addToCart', book})
+  }
+
   const getRatings = (): number[] => {
     const ratingArray = []
     for (let i = 0; i < (book.rating || 0); i++) {ratingArray.push(i)}
@@ -28,6 +34,7 @@ export default function BookDetails(): ReactElement {
 
   return (
     <>
+      <h2>Book Details</h2>
       <div>
         <h1>{book.title}</h1>
         <div className="ui divider"></div>
@@ -67,6 +74,7 @@ export default function BookDetails(): ReactElement {
       </div>
       <button onClick={onGoToList} className="ui button">Back</button>
       <button onClick={onDelete} className="ui red button">Delete</button>
+      <button onClick={addToCart} className="ui green button">Add To Cart</button>
       <Link to={`/books/edit/${book.isbn}`} className="ui yellow button">Edit</Link>
     </>
   )
