@@ -1,11 +1,12 @@
-import React, {useState} from "react"
+import React, {ReactElement} from "react"
 import Project from "../types/Project"
 
 interface Props {
   project: Project
+  onShowDetails: (project: Project) => void
 }
 
-function ProjectListItem(props: Props) {
+function ProjectListItem(props: Props): ReactElement {
   const project = props.project
 
   const progressBarClassMap = {
@@ -15,7 +16,7 @@ function ProjectListItem(props: Props) {
   }
 
   return (
-    <div className="card">
+    <div onClick={() => {props.onShowDetails(project)}} className="card">
       <div className="item" style={{margin: 15}}>
         <h2 className="ui image header">
           <div className="content">
