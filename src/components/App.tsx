@@ -1,5 +1,6 @@
 import React, {ReactElement, useState} from 'react';
 import Project from '../types/Project';
+import ClassCounter from './ClassCounter';
 import ProjectDetails from './ProjectDetails';
 import ProjectList from './ProjectList';
 
@@ -21,6 +22,7 @@ export default function App(): ReactElement {
 
   return (
     <div className="ui container">
+      <ClassCounter />
       {project && viewState === 'details'
         ? <ProjectDetails project={project} onShowList={onShowList} />
         : <ProjectList onShowDetails={onShowDetails} />}
