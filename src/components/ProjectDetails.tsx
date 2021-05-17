@@ -1,13 +1,23 @@
-import React, {ReactElement, useState} from "react"
+import React, {ReactElement, useEffect, useState} from "react"
+import axios, {AxiosResponse} from 'axios'
 import Project from "../types/Project"
 
 interface Props {
-  project: Project
+  projectId: number
   onShowList: () => void;
 }
 
 function ProjectDetails(props: Props): ReactElement {
-  const project = props.project
+  const [project, setProject] = useState<Project>()
+
+  useEffect(() => {
+    axios({method: 'get', url: `http://localhost:3001/projects/${props.projectId}`})
+      .then((response: AxiosResponse<Project>) => {
+        setProject(response.data)
+      })
+  }, [props.projectId])
+
+  if (!project) {return <p>Lade</p>}
 
   return (
     <>
