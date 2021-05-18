@@ -10,6 +10,7 @@ type ViewState = 'list' | 'details'
 export default function App(): ReactElement {
   const [project, setProject] = useState<Project>()
   const [viewState, setViewState] = useState<ViewState>('list')
+  const [showCounter, setShowCounter] = useState(true)
 
   const onShowDetails = (project_: Project) => {
     setProject(project_)
@@ -23,8 +24,12 @@ export default function App(): ReactElement {
 
   return (
     <div className="ui container">
-      <FunctionalCounter />
-      <ClassCounter />
+      {showCounter && (
+        <>
+          <FunctionalCounter />
+          <ClassCounter />
+        </>
+      )}
       {project && viewState === 'details'
         ? <ProjectDetails projectId={project.id} onShowList={onShowList} />
         : <ProjectList onShowDetails={onShowDetails} />}
