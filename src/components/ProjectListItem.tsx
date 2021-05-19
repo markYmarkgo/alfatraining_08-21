@@ -1,12 +1,13 @@
 import React, {ReactElement} from "react"
+import {useHistory} from "react-router-dom"
 import Project from "../types/Project"
 
 interface Props {
   project: Project
-  onShowDetails: (project: Project) => void
 }
 
 function ProjectListItem(props: Props): ReactElement {
+  const history = useHistory()
   const project = props.project
 
   const progressBarClassMap = {
@@ -15,8 +16,12 @@ function ProjectListItem(props: Props): ReactElement {
     'on-hold': 'error'
   }
 
+  const goToProjectDetails = () => {
+    history.push(`/projects/${project.id}`)
+  }
+
   return (
-    <div onClick={() => {props.onShowDetails(project)}} className="card">
+    <div onClick={goToProjectDetails} className="card">
       <div className="item" style={{margin: 15}}>
         <h2 className="ui image header">
           <div className="content">
