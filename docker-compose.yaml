@@ -1,0 +1,63 @@
+version: '3.3'
+
+services:
+
+  reactapp:
+    build: ./
+    networks:
+      - backend
+    expose:
+      - 3000
+    environment:
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+      LETSENCRYPT_HOST: ${URLS}
+      VIRTUAL_HOST: ${URLS}
+      VIRTUAL_PORT: 3000
+
+  # # # # Proxy-Webserver start
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion:latest
+    restart: unless-stopped
+    depends_on:
+      - nginx_proxy
+    networks:
+      - backend
+    environment:
+      DEFAULT_EMAIL: ${LETSENCRYPT_EMAIL}
+    volumes:
+      - proxy_conf:/etc/nginx/conf.d
+      - proxy_vhost:/etc/nginx/vhost.d
+      - proxy_html:/usr/share/nginx/html
+      - proxy_dhparam:/etc/nginx/dhparam
+      - proxy_certs:/etc/nginx/certs:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  nginx_proxy:
+    image: jwilder/nginx-proxy:alpine
+    restart: unless-stopped
+    container_name: nginx-proxy
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - frontend
+      - backend
+    labels:
+      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
+    volumes:
+      - proxy_certs:/etc/nginx/certs:ro
+      - proxy_vhost:/etc/nginx/vhost.d
+      - proxy_html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+  # Proxy-Webserver end # # #
+
+volumes:
+  proxy_conf:
+  proxy_vhost:
+  proxy_html:
+  proxy_dhparam:
+  proxy_certs:
+
+networks:
+  frontend:
+  backend:
