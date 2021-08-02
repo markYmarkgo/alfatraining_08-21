@@ -1,4 +1,4 @@
-import React, {ReactElement} from 'react'
+import React, {ReactElement, useMemo} from 'react'
 import {useParams} from 'react-router-dom';
 
 import BookForm from './BookForm'
@@ -9,6 +9,8 @@ import LoadingSpinner from './shared/LoadingSpinner'
 export default function BookEdit(): ReactElement {
   const isbn = useParams<{isbn: string}>().isbn
   const book = useBookApi<Book>('get', `book/${isbn}`)[0]
+
+  const thumbnails = useMemo(() => book?.thumbnails || [{title: '', url: ''}], [book?.thumbnails])
 
   if (!book) {return <LoadingSpinner />}
 
@@ -25,7 +27,7 @@ export default function BookEdit(): ReactElement {
     isbn={book.isbn}
     description={book.description}
     authors={book.authors}
-    thumbnails={book.thumbnails || [{title: '', url: ''}]}
+    thumbnails={thumbnails}
     published={dateToInputString(book.published)}
     isEdit={true}
   />

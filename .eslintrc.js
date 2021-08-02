@@ -4,6 +4,7 @@ module.exports = {
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
+    "plugin:react-perf/recommended",
     "plugin:@typescript-eslint/recommended",
   ],
   "parserOptions": {
@@ -24,6 +25,7 @@ module.exports = {
   },
   "plugins": [
     "react",
+    "react-perf",
     "@typescript-eslint"
   ],
   "rules": {

@@ -1,4 +1,4 @@
-import React, {useState, ChangeEvent, ReactElement} from 'react';
+import React, {useState, ChangeEvent, ReactElement, useCallback} from 'react';
 import {useHistory} from 'react-router-dom'
 import {Book} from '../types/Book';
 import {bookApi} from '../shared/BookApi'
@@ -13,7 +13,7 @@ export default function BookSearch(props: IProps): ReactElement {
   const [searchResults, setSearchResults] = useState<Book[]>([])
   const history = useHistory()
 
-  const onSearch = (e: ChangeEvent<HTMLInputElement>) => {
+  const onSearch = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value
     setSearchTerm(inputValue)
     if (inputValue.length > 2) {
@@ -21,13 +21,13 @@ export default function BookSearch(props: IProps): ReactElement {
     } else {
       setSearchResults([])
     }
-  }
+  }, [])
 
-  const onClick = (book: Book) => {
+  const onClick = useCallback((book: Book) => () => {
     setSearchResults([])
     setSearchTerm('')
     history.push(`/books/${book.isbn}`)
-  }
+  }, [history])
 
   return (
     <>
@@ -40,7 +40,7 @@ export default function BookSearch(props: IProps): ReactElement {
         {searchResults.length > 0 &&
           <div className="results transition visible">
             {searchResults.map(book =>
-              <span onClick={() => onClick(book)} key={book.isbn} className="result">
+              <span onClick={onClick(book)} key={book.isbn} className="result">
                 {book.title}
                 <p className="description">
                   {book.subtitle}

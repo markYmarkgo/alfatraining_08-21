@@ -1,4 +1,4 @@
-import React, {useState, SyntheticEvent} from 'react';
+import React, {useState, SyntheticEvent, useCallback, ChangeEvent, SetStateAction} from 'react';
 import {useHistory} from 'react-router-dom'
 import css from './BookForm.module.css'
 
@@ -22,9 +22,12 @@ export default function BookForm(props: Props): JSX.Element {
 
   const history = useHistory()
 
-  const book = () => ({title, subtitle, isbn, description, authors, thumbnails, published})
+  const book = useCallback(
+    () => ({title, subtitle, isbn, description, authors, thumbnails, published}),
+    [title, subtitle, isbn, description, authors, thumbnails, published]
+  )
 
-  const handleSubmit = (e: SyntheticEvent) => {
+  const handleSubmit = useCallback((e: SyntheticEvent) => {
     e.preventDefault() // stops default reloading behaviour
     bookApi(
       props.isEdit ? 'put' : 'post',
@@ -32,43 +35,43 @@ export default function BookForm(props: Props): JSX.Element {
       () => history.push(props.isEdit ? `/books/${props.isbn}` : '/books'),
       book()
     )
-  }
+  }, [book, history, props.isEdit, props.isbn])
 
-  const onChangeAuthor = (value: string, index: number) => {
+  const onChangeAuthor = useCallback((index: number) => (e: ChangeEvent<HTMLInputElement>) => {
     setAuthors(_authors => {
       const copyAuthors = [..._authors]
-      copyAuthors[index] = value
+      copyAuthors[index] = e.target.value
       return copyAuthors
     })
-  }
+  }, [])
 
-  const onChangeThumbnail = (index: number, inputObj: {url: string} | {title: string}) => {
+  const onChangeThumbnail = useCallback((index: number, key: string) => (e: ChangeEvent<HTMLInputElement>) => {
     setThumbnails(_thumbnails => {
       const copyThumbnails = [..._thumbnails]
-      copyThumbnails[index] = {...copyThumbnails[index], ...inputObj}
+      copyThumbnails[index] = {...copyThumbnails[index], [key]: e.target.value}
       return copyThumbnails
     })
-  }
+  }, [])
 
-  const onAddThumbnail = () => {
+  const onAddThumbnail = useCallback(() => {
     setThumbnails(_thumbnails => {
       return [..._thumbnails, buildThumbnail('', '')]
     })
-  }
+  }, [])
 
-  const onRemoveThumbnail = () => {
+  const onRemoveThumbnail = useCallback(() => {
     setThumbnails(_thumbnails => {
       const newThumbnails = [..._thumbnails]
       newThumbnails.pop()
       return newThumbnails
     })
-  }
+  }, [])
 
-  const onAddAuthor = () => {
+  const onAddAuthor = useCallback(() => {
     setAuthors(_authors => [..._authors, ''])
-  }
+  }, [])
 
-  const onRemoveAuthor = () => {
+  const onRemoveAuthor = useCallback(() => {
     setAuthors(_authors => {
       if (_authors.length > 1) {
         const newAuthors = [..._authors]
@@ -78,15 +81,19 @@ export default function BookForm(props: Props): JSX.Element {
         return _authors
       }
     })
-  }
+  }, [])
+
+  const onChangeState = useCallback((setter: SetStateAction<any>) => (e: ChangeEvent<HTMLInputElement>) => {
+    setter(e.target.value)
+  }, [])
 
   return (
     <form className={`ui form ${css.bookFom}`} onSubmit={handleSubmit}>
       <label>Buchtitel</label>
-      <input placeholder="Titel" required value={title} onChange={(e) => {setTitle(e.target.value)}} />
+      <input placeholder="Titel" required value={title} onChange={onChangeState(setTitle)} />
 
       <label>Untertitel</label>
-      <input placeholder="Subtitle" value={subtitle} onChange={(e) => {setSubtitle(e.target.value)}} />
+      <input placeholder="Subtitle" value={subtitle} onChange={onChangeState(setSubtitle)} />
 
       <label>Isbn</label>
       <input
@@ -96,10 +103,10 @@ export default function BookForm(props: Props): JSX.Element {
         pattern="\d{9}|\d{11}"
         title="Isbn Nummer muss zwischen 9 und 11 Zeichen lang sein"
         value={isbn}
-        onChange={(e) => {setIsbn(e.target.value)}} />
+        onChange={useCallback((e) => {setIsbn(e.target.value)}, [])} />
 
       <label>Erscheinungsdatum</label>
-      <input type="date" required value={published} onChange={(e) => {setPublished(e.target.value)}} />
+      <input type="date" required value={published} onChange={useCallback((e) => {setPublished(e.target.value)}, [])} />
 
       <label>Authoren</label>
       <button className="ui mini button" type="button" onClick={onAddAuthor}>+</button>
@@ -110,12 +117,12 @@ export default function BookForm(props: Props): JSX.Element {
             placeholder="Autor"
             required
             value={author}
-            onChange={(e) => {onChangeAuthor(e.target.value, index)}} />
+            onChange={onChangeAuthor(index)} />
         </div>
       )}
 
       <label>Beschreibung</label>
-      <input placeholder="Description" value={description} onChange={(e) => {setDescription(e.target.value)}} />
+      <input placeholder="Description" value={description} onChange={onChangeState(setDescription)} />
 
       <label>Bilder</label>
       <button className="ui mini button" type="button" onClick={onAddThumbnail}>+</button>
@@ -123,9 +130,9 @@ export default function BookForm(props: Props): JSX.Element {
       {thumbnails.map((thumbnail, index) =>
         <div key={index} className="field">
           <input placeholder="Url" required className="nine wide field" value={thumbnail.url}
-            onChange={(e) => {onChangeThumbnail(index, {url: e.target.value})}} />
+            onChange={onChangeThumbnail(index, 'url')} />
           <input placeholder="Titel" className="seven wide field" value={thumbnail.title}
-            onChange={(e) => {onChangeThumbnail(index, {title: e.target.value})}} />
+            onChange={onChangeThumbnail(index, 'title')} />
         </div>
       )}
       <button className="ui button">Submit</button>

@@ -1,4 +1,4 @@
-import React, {Fragment, ReactElement} from 'react';
+import React, {Fragment, ReactElement, useCallback} from 'react';
 
 import {Book} from '../types/Book'
 import LoadingSpinner from './shared/LoadingSpinner'
@@ -12,19 +12,19 @@ export default function BookDetails(): ReactElement {
   const history = useHistory()
   const book = useBookApi<Book>('get', `books/${isbn}`)[0]
 
-  if (!book) {return <LoadingSpinner name={`Buch ${isbn}`} />}
-
-  const onGoToList = () => {
+  const onGoToList = useCallback(() => {
     history.push('/books')
-  }
+  }, [history])
 
-  const onDelete = () => {
+  const onDelete = useCallback(() => {
     bookApi('delete', `books/${isbn}`, onGoToList)
-  }
+  }, [isbn, onGoToList])
 
-  const addToCart = () => {
+  const addToCart = useCallback((book: Book) => () => {
     dispatch({type: 'addToCart', book})
-  }
+  }, [dispatch])
+
+  if (!book) {return <LoadingSpinner name={`Buch ${isbn}`} />}
 
   const getRatings = (): number[] => {
     const ratingArray = []
@@ -51,7 +51,7 @@ export default function BookDetails(): ReactElement {
           </div>
           <div className="four wide column">
             <h4>ISBN</h4>
-          ISBN {book.isbn}
+            ISBN {book.isbn}
           </div>
           <div className="four wide column">
             <h4>Erschienen</h4>
@@ -74,7 +74,7 @@ export default function BookDetails(): ReactElement {
       </div>
       <button onClick={onGoToList} className="ui button">Back</button>
       <button onClick={onDelete} className="ui red button">Delete</button>
-      <button onClick={addToCart} className="ui green button">Add To Cart</button>
+      <button onClick={addToCart(book)} className="ui green button">Add To Cart</button>
       <Link to={`/books/edit/${book.isbn}`} className="ui yellow button">Edit</Link>
     </>
   )

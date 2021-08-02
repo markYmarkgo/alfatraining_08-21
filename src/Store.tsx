@@ -1,4 +1,4 @@
-import React, {createContext, Dispatch, ReactElement, useContext, useReducer} from 'react'
+import React, {createContext, Dispatch, ReactElement, useContext, useMemo, useReducer} from 'react'
 import {Book} from './types/Book'
 
 export interface Store {
@@ -52,7 +52,7 @@ export default function StoreProvider(props: {children: ReactElement, store?: St
   const [store, dispatch] = useReducer(reducer, props.store || {cart: []});
 
   return (
-    <StoreContext.Provider value={{store, dispatch}}>
+    <StoreContext.Provider value={useMemo(() => ({store, dispatch}), [store])}>
       {props.children}
     </StoreContext.Provider>
   );

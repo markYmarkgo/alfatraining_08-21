@@ -1,4 +1,4 @@
-import React, {ReactElement} from 'react';
+import React, {ReactElement, useCallback} from 'react';
 
 import BookListItem from './BookListItem'
 import {Book} from '../types/Book'
@@ -9,13 +9,13 @@ export default function BookList(): ReactElement {
 
   const [books, setBooks] = useBookApi<Book[]>('get', 'books')
 
-  if (!books) {return <LoadingSpinner name="Bücher" />}
-
-  const onReset = () => {
+  const onReset = useCallback(() => {
     bookApi<string>('delete', 'books', () => {
       bookApi<Book[]>('get', 'books', setBooks)
     })
-  }
+  }, [setBooks])
+
+  if (!books) {return <LoadingSpinner name="Bücher" />}
 
   return books.length // !== 0
     ? (
