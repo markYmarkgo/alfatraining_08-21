@@ -1,5 +1,4 @@
 import axios, {AxiosResponse, Method} from 'axios';
-import {isArray} from 'lodash';
 import {Dispatch, SetStateAction, useEffect, useState} from 'react';
 import {factoryRawToBook, isBookBase} from '../types/Book';
 
